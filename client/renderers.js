@@ -3,7 +3,7 @@
  */
 
 import { removeData } from "./dataMethods.js";
-import { socket } from './ws.js'
+import { socket } from "./socket";
 /**
  * Renders all the data items in User Data as a bullet list to be inserted in a <ul> element. Adds listeners for deleteing elements
  */

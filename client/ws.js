@@ -1,3 +1,7 @@
+/**
+ * This file creates the socket connection, handles all incoming messages from server, 
+ * and instantiates the userData object used as the data store in the app
+ */
 import { hideLoginShowUserData } from "./renderers.js"
 
 /**
@@ -5,14 +9,9 @@ import { hideLoginShowUserData } from "./renderers.js"
  */
 let userData = {}
 
-/**
- * The stale data object is used to compare to the userData that may have been changed, so that only changes can be sent to server for storage
- */
-let staleData = {}
-
 const socket = new WebSocket('ws://localhost:3000/')
 socket.onopen = (event) => {
-    socket.send(JSON.stringify({messageType: messageTypes.clientSend.newConnection}))
+    socket.send(JSON.stringify({ messageType: messageTypes.clientSend.newConnection }))
 }
 
 /**
@@ -23,19 +22,63 @@ socket.onmessage = (event) => {
     //* Decide what action to take based on messageType
     switch (data.messageType) {
         case messageTypes.serverSend.userData:
+            //Received after login or user creation so app needs to render data
             userData = data.data
-            staleData = JSON.parse(JSON.stringify(data.data))
             hideLoginShowUserData(userData)
+
             break;
-        case messageTypes.serverSend.error:
+        case messageTypes.serverSend.error || messageTypes.serverSend.notification:
             alert(data.data);
+
+            break;
+        case messageTypes.serverSend.updateFailed:
+            // Force a retry when a update fails
+            socket.send(JSON.stringify({
+                messageType: messageTypes.clientSend.dataUpdate,
+                data: data.data
+            }))
+            break;
         default:
-            console.log('Data Not Present:', event)
             break;
     }
 }
 
-export { socket, userData, staleData }
+// Send changes in data to data base on an interval
+setInterval(() => {
+    // Find added data
+    const dataAdded = userData?.data?.filter(d => d?.new)
+
+    //Find delted data
+    let dataDeleted = userData?.data?.filter(d => d?.deleted)
+
+    // Only send a message if there has been a change
+    if (dataAdded?.length > 0 || dataDeleted?.length > 0) {
+        socket.send(JSON.stringify({
+            messageType: messageTypes.clientSend.dataUpdate,
+            data:
+            {
+                uuid: userData.uuid,
+                accessToken: userData.accessToken,
+                added: dataAdded,
+                deleted: dataDeleted
+            }
+        }))
+
+        // Set new flag to false and remove deleted elements from user data
+        userData.data.forEach((d, i) => {
+            if (d?.new) { 
+                d.new = false 
+            }
+
+            if (d?.deleted) {
+                userData.data.splice(i, 1)
+            }
+        });
+    }
+
+}, 3000)
+
+export { socket, userData }
 
 
 

@@ -12,3 +12,5 @@ export function removeData(userData, id){
     userData.data[index].deleted = true
     return userData
 }
+
+

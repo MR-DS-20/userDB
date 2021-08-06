@@ -27,7 +27,6 @@ export function login(uuid) {
 function generateUUID() {
     if (uuidv4) {
         const id = uuidv4()
-        console.log('New id created',id)
         return id
     } else {
         return undefined

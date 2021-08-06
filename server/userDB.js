@@ -1,7 +1,6 @@
-
 const jwt = require("./jwt");
 /**
- * Used to create data persitence while server is running
+ * Used to create data persistence while server is running
  */
 module.exports = class UserDB {
     /**
@@ -36,23 +35,22 @@ module.exports = class UserDB {
     updateData(uuid, added, deleted) {
         const userIndex = this.users.findIndex(u => u.uuid === uuid)
 
-        added = added?.map(d => { 
-            if(d.new){
+        added = added?.map(d => {
+            if (d.new) {
                 d.new = false;
             }
-             return d 
+            return d
         })
-        if(added){
+        if (added) {
             this.users[userIndex].data.push(...added)
         }
 
         deleted.forEach(d => {
-            this.users[userIndex].data.forEach( (i, index) => {
-                if(i.id === d.id){
+            this.users[userIndex].data.forEach((i, index) => {
+                if (i.id === d.id) {
                     this.users[userIndex].data.splice(index, 1)
                 }
             })
         });
-        console.log(this.users[userIndex])
     }
 };
