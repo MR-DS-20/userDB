@@ -1,5 +1,5 @@
 
-const generateAccessToken = require("./jwt");
+const jwt = require("./jwt");
 /**
  * Used to create data persitence while server is running
  */
@@ -21,7 +21,7 @@ module.exports = class UserDB {
     addUser(uuid) {
         const newUser = {
             uuid: uuid,
-            accessToken: generateAccessToken(uuid),
+            accessToken: jwt.generateAccessToken(uuid),
             data: []
         };
         this.users.push(newUser);

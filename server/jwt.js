@@ -2,6 +2,15 @@ const TOKEN_SECRET = '09f26e402586e2faa8da4c98a35f1b20d6b033c6097befa8be3486a829
 const jwt = require('jsonwebtoken');
 
 
-module.exports = function generateAccessToken(uuid) {
+function generateAccessToken(uuid) {
     return jwt.sign(uuid, TOKEN_SECRET);
+}
+
+function verifyJwt(token) {
+    return jwt.verify(token, TOKEN_SECRET)
+}
+
+module.exports = {
+    generateAccessToken: generateAccessToken,
+    verifyJwt: verifyJwt
 }

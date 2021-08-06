@@ -12,7 +12,7 @@ let staleData = {}
 
 const socket = new WebSocket('ws://localhost:3000/')
 socket.onopen = (event) => {
-    socket.send('New Client Connection')
+    socket.send(JSON.stringify({messageType: messageTypes.clientSend.newConnection}))
 }
 
 /**
