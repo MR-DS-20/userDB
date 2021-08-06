@@ -79,7 +79,7 @@
     <script type="module">
 
         import { socket, createUserID, login, userData, staleData, removeData, addData, renderDataList } from './userDB.js'
-
+        let addedData = []
         /**
          * Listeners for create user and login
          */
@@ -96,19 +96,43 @@
             if (!input) {
                 alert('A value must be entered to save')
             } else {
-                addData(userData, { id: Date.now(), value: input })
+                addData(userData, { id: Date.now(), value: input, new: true })
                 renderDataList(userData)
             }
         })
 
         // Send changes in data to data base on an interval
-        setTimeout(() => {
-            const changes = userData.data.filter(d => staleData.data.indexOf(d) === -1)
-            if(changes.length > 0) {
-                socket.send({messageType: messageTypes.clientSend.dataUpdate, data: changes})
+        setInterval(() => {
+            // Find added data
+            const dataAdded = userData?.data?.filter(d => d?.new)
+
+            //Find delted data
+            let dataDeleted = userData?.data?.filter(d => d?.deleted)
+
+            if (dataAdded?.length > 0 || dataDeleted?.length > 0) {
+                socket.send(JSON.stringify({
+                    messageType: messageTypes.clientSend.dataUpdate,
+                    data:
+                    {
+                        uuid: userData.uuid,
+                        added: dataAdded,
+                        deleted: dataDeleted
+                    }
+                }))
+
+                // Set new flag to false and remove deleted elements from user data
+                userData.data.forEach((d, i) => {
+                    if (d?.new) { 
+                        d.new = false 
+                    }
+
+                    if (d?.deleted) {
+                        userData.data.splice(i, 1)
+                    }
+                });
             }
 
-        }, 3000)
+        }, 6000)
 
 
 

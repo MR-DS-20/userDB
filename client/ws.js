@@ -24,17 +24,18 @@ socket.onmessage = (event) => {
     switch (data.messageType) {
         case messageTypes.serverSend.userData:
             userData = data.data
-            staleData = data.data
+            staleData = JSON.parse(JSON.stringify(data.data))
             hideLoginShowUserData(userData)
             break;
-
+        case messageTypes.serverSend.error:
+            alert(data.data);
         default:
             console.log('Data Not Present:', event)
             break;
     }
 }
 
-export { socket, userData , staleData}
+export { socket, userData, staleData }
 
 
 
