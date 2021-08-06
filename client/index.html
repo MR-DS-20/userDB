@@ -74,32 +74,36 @@
             <button class="btn btn-outline-secondary mb-2" type="button" id="add-user-data-button">Save</button>
         </form>
     </div>
+    <!-- To generate new User UUID -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.1.0/uuidv4.min.js"></script>
-    <script src="../lib/messageTypes.js"></script>
+    <!-- Import messageTypes from library for sending and receiveing  -->
+    <script src="./messageTypes.js"></script>
+    <!-- Imports all necessary features and attaches event listeners -->
     <script type="module">
 
-        import { socket, createUserID, login, userData, removeData, addData, renderDataList } from './userDB.js'
-        let addedData = []
+        import { createUserID, login, userData, addData, renderDataList } from './userDB.js'
+
         /**
          * Listeners for create user and login
          */
-        document.getElementById('create-user-id-btn').addEventListener('click', () => createUserID())
+        document.getElementById('create-user-id-btn').addEventListener('click', () => createUserID());
+
         document.getElementById('login-btn').addEventListener('click', (element) => {
-            login(document.getElementById('user-id-input').value)
-        })
+            login(document.getElementById('user-id-input').value);
+        });
 
         /**
          * Adds new Data
          */
         document.getElementById('add-user-data-button').addEventListener('click', () => {
-            const input = document.getElementById('add-user-data-input').value
+            const input = document.getElementById('add-user-data-input').value;
             if (!input) {
-                alert('A value must be entered to save')
+                alert('A value must be entered to save');
             } else {
-                addData(userData, { id: Date.now(), value: input, new: true })
-                renderDataList(userData)
+                addData(userData, { id: Date.now(), value: input, new: true });
+                renderDataList(userData);
             }
-        })
+        });
 
         
 
