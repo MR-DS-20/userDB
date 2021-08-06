@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User DB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container py-4" id="login-component">
+        <div class="p-5 mb-4 bg-light rounded-3">
+            <div class="container-fluid py-5">
+                <h1 class="display-5 fw-bold">UserDB</h1>
+                <p class="col-md-8 fs-4">Welcome to UserDB. Please login with an existing ID or create a new account</p>
+            </div>
+        </div>
+        <div class="row align-items-md-stretch">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <div class="h-100 p-5 text-white bg-dark rounded-3">
+                    <h2>Create an account</h2>
+                    <button class="btn btn-outline-light mb-2" type="button" id="create-user-id-btn">Create
+                        Account</button>
+                    <br>
+                    <small>No Identifiable information will be collected and you'll be given an annonymous user
+                        id</small>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="h-100 p-5 bg-light border rounded-3">
+                    <h2>Login</h2>
+                    <form>
+                        <div class="form-group">
+                            <input type="text" class="form-control mb-2" id="user-id" aria-describedby="user-id-hint"
+                                placeholder="Enter User ID">
+
+                        </div>
+                        <button class="btn btn-outline-secondary mb-2" type="button">Login</button>
+                        <br>
+                        <small id="user-id-hint" class="form-text text-muted">Please enter your annonymous user id
+                            given when you created an account</small>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <hr class="my-2">
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.1.0/uuidv4.min.js"></script>
+    <script src="../lib/messageTypes.js"></script>
+    <!-- <script src="ws.js"></script> -->
+    <!-- <script src="account.js"></script> --> 
+    <script type="module">
+        import { createUserID } from './userDB.js'
+        document.getElementById('create-user-id-btn').addEventListener('click', () => createUserID())
+
+    </script>
+</body>
+
+</html>
