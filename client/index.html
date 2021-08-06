@@ -8,9 +8,15 @@
     <title>User DB</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <style>
+        .pointer {
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
+    <!-- Login Component. Login or create user. Will be hidden when server returns userdata -->
     <div class="container py-4" id="login-component">
         <div class="p-5 mb-4 bg-light rounded-3">
             <div class="container-fluid py-5">
@@ -20,6 +26,22 @@
         </div>
         <div class="row align-items-md-stretch">
             <div class="col-md-6 mb-4 mb-md-0">
+                <div class="h-100 p-5 bg-light border rounded-3">
+                    <h2>Login</h2>
+                    <form>
+                        <div class="form-group">
+                            <input type="text" class="form-control mb-2" id="user-id-input"
+                                aria-describedby="user-id-hint" placeholder="Enter User ID">
+
+                        </div>
+                        <button class="btn btn-outline-secondary mb-2" type="button" id="login-btn">Login</button>
+                        <br>
+                        <small id="user-id-hint" class="form-text text-muted">Please enter your annonymous user id
+                            given when you created an account</small>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-6 ">
                 <div class="h-100 p-5 text-white bg-dark rounded-3">
                     <h2>Create an account</h2>
                     <button class="btn btn-outline-light mb-2" type="button" id="create-user-id-btn">Create
@@ -29,32 +51,66 @@
                         id</small>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="h-100 p-5 bg-light border rounded-3">
-                    <h2>Login</h2>
-                    <form>
-                        <div class="form-group">
-                            <input type="text" class="form-control mb-2" id="user-id" aria-describedby="user-id-hint"
-                                placeholder="Enter User ID">
-
-                        </div>
-                        <button class="btn btn-outline-secondary mb-2" type="button">Login</button>
-                        <br>
-                        <small id="user-id-hint" class="form-text text-muted">Please enter your annonymous user id
-                            given when you created an account</small>
-                    </form>
-                </div>
-            </div>
         </div>
         <hr class="my-2">
     </div>
+    <!-- User Data Display Component. Will render user data when logged in. -->
+    <div class="container py-4" id="user-data-component" style="display: none;">
+        <h1>Welcome!</h1>
+        <h2>User ID: <small id="user-id"></small> </h2>
+        <hr class="my-4">
+        <ul id="user-data-list">
+
+        </ul>
+    </div>
+    <!-- User Data edit component -->
+    <div class="container py-4" id="user-data-edit-component" style="display: none;">
+        <h3>Add Data</h3>
+        <form>
+            <div class="form-group">
+                <input type="text" class="form-control mb-2" id="add-user-data-input">
+
+            </div>
+            <button class="btn btn-outline-secondary mb-2" type="button" id="add-user-data-button">Save</button>
+        </form>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.1.0/uuidv4.min.js"></script>
     <script src="../lib/messageTypes.js"></script>
-    <!-- <script src="ws.js"></script> -->
-    <!-- <script src="account.js"></script> --> 
     <script type="module">
-        import { createUserID } from './userDB.js'
+
+        import { socket, createUserID, login, userData, staleData, removeData, addData, renderDataList } from './userDB.js'
+
+        /**
+         * Listeners for create user and login
+         */
         document.getElementById('create-user-id-btn').addEventListener('click', () => createUserID())
+        document.getElementById('login-btn').addEventListener('click', (element) => {
+            login(document.getElementById('user-id-input').value)
+        })
+
+        /**
+         * Adds new Data
+         */
+        document.getElementById('add-user-data-button').addEventListener('click', () => {
+            const input = document.getElementById('add-user-data-input').value
+            if (!input) {
+                alert('A value must be entered to save')
+            } else {
+                addData(userData, { id: Date.now(), value: input })
+                renderDataList(userData)
+            }
+        })
+
+        // Send changes in data to data base on an interval
+        setTimeout(() => {
+            const changes = userData.data.filter(d => staleData.data.indexOf(d) === -1)
+            if(changes.length > 0) {
+                socket.send({messageType: messageTypes.clientSend.dataUpdate, data: changes})
+            }
+
+        }, 3000)
+
+
 
     </script>
 </body>
